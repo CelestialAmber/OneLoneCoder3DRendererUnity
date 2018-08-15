@@ -1,8 +1,14 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 namespace CustomRenderer
 {
+    public static class VectorExtentions{
+        public static vec3 ToVec3(this Vector3 v){
+            return new vec3(v.x, v.y, v.z);
+        }
+
+    }
     [System.Serializable]
     public class vec3 {
         public float x;
@@ -61,11 +67,10 @@ namespace CustomRenderer
         {
             vec3 o = vec3.zero;
 
-            o.x = i.x * m.m00 + i.y * m.m10 + i.z * m.m20 + m.m30;
-            o.y = i.x * m.m01  + i.y * m.m11 + i.z * m.m21 + m.m31;
-            o.z = i.x * m.m02 + i.y * m.m12 + i.z * m.m22 + m.m32;
-            o.w = i.x * m.m03 + i.y * m.m13 + i.z * m.m23 + m.m33;
-
+            o.x = i.x * m.m00 + i.y * m.m10 + i.z * m.m20 + i.w * m.m30;
+            o.y = i.x * m.m01  + i.y * m.m11 + i.z * m.m21 + i.w * m.m31;
+            o.z = i.x * m.m02 + i.y * m.m12 + i.z * m.m22 + i.w * m.m32;
+            o.w = i.x * m.m03 + i.y * m.m13 + i.z * m.m23 + i.w * m.m33;
 
             return o;
         }
@@ -94,7 +99,17 @@ namespace CustomRenderer
             return matrix;
 
         }
-
+       public static Matrix4x4 Matrix_MakeRotationY(float fAngleRad)
+        {
+            Matrix4x4 matrix = new Matrix4x4();
+            matrix.m00 = Mathf.Cos(fAngleRad);
+            matrix.m02 = Mathf.Sin(fAngleRad);
+            matrix.m20 = -Mathf.Sin(fAngleRad);
+            matrix.m11 = 1.0f;
+            matrix.m22 = Mathf.Cos(fAngleRad);
+            matrix.m33 = 1.0f;
+            return matrix;
+        }
         public static Matrix4x4 Matrix_MakeTranslation(vec3 position)
         {
             Matrix4x4 matrix = new Matrix4x4();
@@ -129,29 +144,44 @@ namespace CustomRenderer
         {
             // Calculate new forward direction
             vec3 newForward = target - pos;
-            newForward = RenderMath.Vector_Normalize(newForward);
+            newForward = Vector_Normalize(newForward);
 
             // Calculate new Up direction
-            vec3 a = newForward * RenderMath.Vector_DotProduct(up, newForward);
+            vec3 a = newForward * Vector_DotProduct(up, newForward);
             vec3 newUp = up - a;
-            newUp = RenderMath.Vector_Normalize(newUp);
+            newUp = Vector_Normalize(newUp);
 
             // New Right direction is easy, its just cross product
             vec3 newRight = Vector_CrossProduct(newUp, newForward);
 
             // Construct Dimensioning and Translation Matrix    
             Matrix4x4 matrix = new Matrix4x4();
-            matrix.SetColumn(0,new Vector4(newRight.x, newUp.x, newForward.x, pos.x));
-            matrix.SetColumn(1, new Vector4(newRight.y, newUp.y, newForward.y, pos.y));
-            matrix.SetColumn(2, new Vector4(newRight.z, newUp.z, newForward.z, pos.z));
-            matrix.SetColumn(3, new Vector4(0,0,0, 1.0f));
-         
+            /*
+            matrix.m00 = newRight.x; matrix.m01 = newRight.y; matrix.m02 = newRight.z; matrix.m03 = 0.0f;
+            matrix.m10 = newUp.x; matrix.m11 = newUp.y; matrix.m12 = newUp.z; matrix.m13 = 0.0f;
+            matrix.m20 = newForward.x; matrix.m21 = newForward.y; matrix.m22 = newForward.z; matrix.m23 = 0.0f;
+            matrix.m30 = pos.x; matrix.m31 = pos.y; matrix.m32 = pos.z; matrix.m33 = 1.0f;
+
+*/
+            matrix.m00 = newRight.x; matrix.m10 = newRight.y; matrix.m02 = newRight.z; matrix.m03 = 0.0f;
+            matrix.m01 = newUp.x; matrix.m11 = newUp.y; matrix.m12 = newUp.z; matrix.m13 = 0.0f;
+            matrix.m02 = newForward.x; matrix.m21 = newForward.y; matrix.m22 = newForward.z; matrix.m23 = 0.0f;
+            matrix.m03 = pos.x; matrix.m31 = pos.y; matrix.m32 = pos.z; matrix.m33 = 1.0f;
+
             return matrix;
 
         }
         public static Matrix4x4 Matrix_QuickInverse(Matrix4x4 m) // Only for Rotation/Translation Matrices
         {
-            return m.inverse;
+            Matrix4x4 matrix = new Matrix4x4();
+            matrix.m00 = m.m00; matrix.m01 = m.m10; matrix.m02 = m.m20; matrix.m03 = 0.0f;
+            matrix.m10 = m.m01; matrix.m11 = m.m11; matrix.m12 = m.m21; matrix.m13 = 0.0f;
+            matrix.m20 = m.m02; matrix.m21 = m.m12; matrix.m22 = m.m22; matrix.m23 = 0.0f;
+            matrix.m30 = -(m.m30 * matrix.m00 + m.m31 * matrix.m10 + m.m32 * matrix.m20);
+            matrix.m31 = -(m.m30 * matrix.m01 + m.m31 * matrix.m11 + m.m32 * matrix.m21);
+            matrix.m32 = -(m.m30 * matrix.m02 + m.m31 * matrix.m12 + m.m32 * matrix.m22);
+            matrix.m33 = 1.0f;
+            return matrix;
         }
 
         public static  vec3 Vector_Normalize(vec3 v)

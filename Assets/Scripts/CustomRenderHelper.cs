@@ -1,153 +1,179 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static Unity.Mathematics.math;
-using Unity.Mathematics;
 namespace CustomRenderer
 {
-    
+    [System.Serializable]
+    public class vec3 {
+        public float x;
+        public float y;
+        public float z;
+        public float w;
+        public vec3(float x, float y, float z){
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            w = 1;
+        }
+
+        public static vec3 zero{
+            get{
+                return new vec3(0, 0, 0);
+            }
+        }
+        public static vec3 operator * (vec3 lhs, float rhs){
+            return new vec3(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs);
+        }
+        public static vec3 operator *(vec3 lhs, vec3 rhs)
+        {
+            return new vec3(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z);
+        }
+        public static vec3 operator /(vec3 lhs, float rhs)
+        {
+            return new vec3(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs);
+        }
+        public static vec3 operator /(vec3 lhs, vec3 rhs)
+        {
+            return new vec3(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z);
+        }
+        public static vec3 operator +(vec3 lhs, float rhs)
+        {
+            return new vec3(lhs.x + rhs, lhs.y + rhs, lhs.z + rhs);
+        }
+        public static vec3 operator +(vec3 lhs, vec3 rhs)
+        {
+            return new vec3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
+        }
+        public static vec3 operator -(vec3 lhs, float rhs)
+        {
+            return new vec3(lhs.x - rhs, lhs.y - rhs, lhs.z - rhs);
+        }
+        public static vec3 operator -(vec3 lhs, vec3 rhs)
+        {
+            return new vec3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
+        }
+
+
+    }
     public class RenderMath{
 
-       public static float3 Matrix_MultiplyVector(float3 i, float4x4 m)
+       public static vec3 Matrix_MultiplyVector(vec3 i, Matrix4x4 m)
         {
-            float3 o = float3(0);
-            o.x = i.x * m.c0.x + i.y * m.c1.x + i.z * m.c2.x + m.c3.x;
-            o.y = i.x * m.c0.y + i.y * m.c1.y + i.z * m.c2.y + m.c3.y;
-            o.z = i.x * m.c0.z + i.y * m.c1.z + i.z * m.c2.z + m.c3.z;
+            vec3 o = vec3.zero;
+
+            o.x = i.x * m.m00 + i.y * m.m10 + i.z * m.m20 + m.m30;
+            o.y = i.x * m.m01  + i.y * m.m11 + i.z * m.m21 + m.m31;
+            o.z = i.x * m.m02 + i.y * m.m12 + i.z * m.m22 + m.m32;
+            o.w = i.x * m.m03 + i.y * m.m13 + i.z * m.m23 + m.m33;
+
+
             return o;
         }
-        public static float4x4 Matrix_MakeIdentity()
+        public static Matrix4x4 Matrix_MakeIdentity()
         {
-            float4x4 matrix = float4x4(0);
-            matrix.c0.x = 1.0f;
-            matrix.c1.y = 1.0f;
-            matrix.c2.z = 1.0f;
-            matrix.c3.w = 1.0f;
+            Matrix4x4 matrix = new Matrix4x4();
+            matrix.m00 = 1.0f;
+            matrix.m11 = 1.0f;
+            matrix.m22 = 1.0f;
+            matrix.m33 = 1.0f;
             return matrix;
         }
-        public static float4x4 Matrix_MakeRotation(float3 rotation)
+        public static Matrix4x4 Matrix_MakeRotation(vec3 rotation)
         {
-            float4x4 matrix = float4x4(0);
-            matrix.c0.x = cos(rotation.y) * cos(rotation.z);
-            matrix.c0.y = cos(rotation.y) * sin(rotation.z);
-            matrix.c0.z = -sin(rotation.y);
-            matrix.c1.x = sin(rotation.x) * sin(rotation.y) * cos(rotation.z) - cos(rotation.x) * sin(rotation.z);
-            matrix.c1.y = sin(rotation.x) * sin(rotation.y) * sin(rotation.z) + cos(rotation.x) * cos(rotation.z);
-            matrix.c1.z = sin(rotation.x) * cos(rotation.y);
-            matrix.c2.x = cos(rotation.x) * sin(rotation.y) * cos(rotation.z) + sin(rotation.x) * sin(rotation.z);
-            matrix.c2.y = cos(rotation.x) * sin(rotation.y) * sin(rotation.z) - sin(rotation.x) * cos(rotation.z);
-            matrix.c2.z = cos(rotation.x) * cos(rotation.y);
-            matrix.c3.w = 1;
+            Matrix4x4 matrix = new Matrix4x4();
+            matrix.m00 = Mathf.Cos(rotation.y) * Mathf.Cos(rotation.z);
+            matrix.m01 = Mathf.Cos(rotation.y) * Mathf.Sin(rotation.z);
+            matrix.m02 = -Mathf.Sin(rotation.y);
+            matrix.m10 = Mathf.Sin(rotation.x) * Mathf.Sin(rotation.y) * Mathf.Cos(rotation.z) - Mathf.Cos(rotation.x) * Mathf.Sin(rotation.z);
+            matrix.m11 = Mathf.Sin(rotation.x) * Mathf.Sin(rotation.y) * Mathf.Sin(rotation.z) + Mathf.Cos(rotation.x) * Mathf.Cos(rotation.z);
+            matrix.m12 = Mathf.Sin(rotation.x) * Mathf.Cos(rotation.y);
+            matrix.m20 = Mathf.Cos(rotation.x) * Mathf.Sin(rotation.y) * Mathf.Cos(rotation.z) + Mathf.Sin(rotation.x) * Mathf.Sin(rotation.z);
+            matrix.m21 = Mathf.Cos(rotation.x) * Mathf.Sin(rotation.y) * Mathf.Sin(rotation.z) - Mathf.Sin(rotation.x) * Mathf.Cos(rotation.z);
+            matrix.m22 = Mathf.Cos(rotation.x) * Mathf.Cos(rotation.y);
+            matrix.m33 = 1;
             return matrix;
 
         }
 
-        public static float4x4 Matrix_MakeTranslation(float3 position)
+        public static Matrix4x4 Matrix_MakeTranslation(vec3 position)
         {
-            float4x4 matrix = float4x4(0);
-            matrix.c0.x = 1.0f;
-            matrix.c1.y = 1.0f;
-            matrix.c2.z = 1.0f;
-            matrix.c3.w = 1.0f;
-            matrix.c3.x = position.x;
-            matrix.c3.y = position.y;
-            matrix.c3.z = position.z;
-            return matrix;
-        }
-
-        public static float4x4 Matrix_MakeProjection(float fFovDegrees, float fAspectRatio, float fNear, float fFar)
-        {
-            float fFovRad = 1.0f / tan(fFovDegrees * 0.5f / 180.0f * Mathf.PI);
-            float4x4 matrix = float4x4(0);
-            matrix.c0.x = fAspectRatio * fFovRad;
-            matrix.c1.y = fFovRad;
-            matrix.c2.z = fFar / (fFar - fNear);
-            matrix.c3.z = (-fFar * fNear) / (fFar - fNear);
-            matrix.c2.w = 1.0f;
-            matrix.c3.w = 0.0f;
-            return matrix;
-        }
-        public static float4x4 Matrix_MultiplyMatrix(float4x4 m1, float4x4 m2)
-        {
-            float4x4 matrix = float4x4(0);
-
-            //Row 1;
-            matrix.c0.x = m1.c0.x * m2.c0.x + m1.c0.y * m2.c1.x + m1.c0.z * m2.c2.x + m1.c0.w * m2.c3.x;
-            matrix.c1.x = m1.c1.x * m2.c0.x + m1.c1.y * m2.c1.x + m1.c1.z * m2.c2.x + m1.c1.w * m2.c3.x;
-            matrix.c2.x = m1.c2.x * m2.c0.x + m1.c2.y * m2.c1.x + m1.c2.z * m2.c2.x + m1.c2.w * m2.c3.x;
-            matrix.c3.x = m1.c3.x * m2.c0.x + m1.c3.y * m2.c1.x + m1.c3.z * m2.c2.x + m1.c3.w * m2.c3.x;
-
-            //Row 2;
-            matrix.c0.y = m1.c0.x * m2.c0.y + m1.c0.y * m2.c1.y + m1.c0.z * m2.c2.y + m1.c0.w * m2.c3.y;
-            matrix.c1.y = m1.c1.x * m2.c0.y + m1.c1.y * m2.c1.y + m1.c1.z * m2.c2.y + m1.c1.w * m2.c3.y;
-            matrix.c2.y = m1.c2.x * m2.c0.y + m1.c2.y * m2.c1.y + m1.c2.z * m2.c2.y + m1.c2.w * m2.c3.y;
-            matrix.c3.y = m1.c3.x * m2.c0.y + m1.c3.y * m2.c1.y + m1.c3.z * m2.c2.y + m1.c3.w * m2.c3.y;
-
-            //Row 3;
-            matrix.c0.z = m1.c0.x * m2.c0.z + m1.c0.y * m2.c1.z + m1.c0.z * m2.c2.z + m1.c0.w * m2.c3.z;
-            matrix.c1.z = m1.c1.x * m2.c0.z + m1.c1.y * m2.c1.z + m1.c1.z * m2.c2.z + m1.c1.w * m2.c3.z;
-            matrix.c2.z = m1.c2.x * m2.c0.z + m1.c2.y * m2.c1.z + m1.c2.z * m2.c2.z + m1.c2.w * m2.c3.z;
-            matrix.c3.z = m1.c3.x * m2.c0.z + m1.c3.y * m2.c1.z + m1.c3.z * m2.c2.z + m1.c3.w * m2.c3.z;
-
-            //Row 4;
-            matrix.c0.w = m1.c0.x * m2.c0.w + m1.c0.y * m2.c1.w + m1.c0.z * m2.c2.w + m1.c0.w * m2.c3.w;
-            matrix.c1.w = m1.c1.x * m2.c0.w + m1.c1.y * m2.c1.w + m1.c1.z * m2.c2.w + m1.c1.w * m2.c3.w;
-            matrix.c2.w = m1.c2.x * m2.c0.w + m1.c2.y * m2.c1.w + m1.c2.z * m2.c2.w + m1.c2.w * m2.c3.w;
-            matrix.c3.w = m1.c3.x * m2.c0.w + m1.c3.y * m2.c1.w + m1.c3.z * m2.c2.w + m1.c3.w * m2.c3.w;
-
-
+            Matrix4x4 matrix = new Matrix4x4();
+            matrix.m00 = 1.0f;
+            matrix.m11 = 1.0f;
+            matrix.m22 = 1.0f;
+            matrix.m33 = 1.0f;
+            matrix.m30 = position.x;
+            matrix.m31 = position.y;
+            matrix.m32 = position.z;
             return matrix;
         }
 
-        public static float4x4 Matrix_PointAt(float3 pos, float3 target, float3 up)
+        public static Matrix4x4 Matrix_MakeProjection(float fFovDegrees, float fAspectRatio, float fNear, float fFar)
+        {
+            float fFovRad = 1.0f / Mathf.Tan(fFovDegrees * 0.5f / 180.0f * Mathf.PI);
+            Matrix4x4 matrix = new Matrix4x4();
+            matrix.m00 = fAspectRatio * fFovRad;
+            matrix.m11 = fFovRad;
+            matrix.m22 = fFar / (fFar - fNear);
+            matrix.m32 = (-fFar * fNear) / (fFar - fNear);
+            matrix.m23 = 1.0f;
+            matrix.m33 = 0.0f;
+            return matrix;
+        }
+        public static Matrix4x4 Matrix_MultiplyMatrix(Matrix4x4 m1, Matrix4x4 m2)
+        {
+            return m1 * m2;
+        }
+
+        public static Matrix4x4 Matrix_PointAt(vec3 pos, vec3 target, vec3 up)
         {
             // Calculate new forward direction
-            float3 newForward = target - pos;
-            newForward = normalize(newForward);
+            vec3 newForward = target - pos;
+            newForward = RenderMath.Vector_Normalize(newForward);
 
             // Calculate new Up direction
-            float3 a = newForward * dot(up, newForward);
-            float3 newUp = up - a;
-            newUp = normalize(newUp);
+            vec3 a = newForward * RenderMath.Vector_DotProduct(up, newForward);
+            vec3 newUp = up - a;
+            newUp = RenderMath.Vector_Normalize(newUp);
 
             // New Right direction is easy, its just cross product
-            float3 newRight = cross(newUp, newForward);
+            vec3 newRight = Vector_CrossProduct(newUp, newForward);
 
             // Construct Dimensioning and Translation Matrix    
-            float4x4 matrix = float4x4(0);
-            matrix.c0.x = newRight.x; matrix.c0.y = newRight.y; matrix.c0.z = newRight.z; matrix.c0.w = 0.0f;
-            matrix.c1.x = newUp.x; matrix.c1.y = newUp.y; matrix.c1.z = newUp.z; matrix.c1.w = 0.0f;
-            matrix.c2.x = newForward.x; matrix.c2.y = newForward.y; matrix.c2.z = newForward.z; matrix.c2.w = 0.0f;
-            matrix.c3.x = pos.x; matrix.c3.y = pos.y; matrix.c3.z = pos.z; matrix.c3.w = 1.0f;
+            Matrix4x4 matrix = new Matrix4x4();
+            matrix.SetColumn(0,new Vector4(newRight.x, newUp.x, newForward.x, pos.x));
+            matrix.SetColumn(1, new Vector4(newRight.y, newUp.y, newForward.y, pos.y));
+            matrix.SetColumn(2, new Vector4(newRight.z, newUp.z, newForward.z, pos.z));
+            matrix.SetColumn(3, new Vector4(0,0,0, 1.0f));
+         
             return matrix;
 
         }
-        public static float4x4 Matrix_QuickInverse(float4x4 m) // Only for Rotation/Translation Matrices
+        public static Matrix4x4 Matrix_QuickInverse(Matrix4x4 m) // Only for Rotation/Translation Matrices
         {
-            float4x4 matrix = float4x4(0);
-            matrix.c0.x = m.c0.x; matrix.c0.y = m.c1.x; matrix.c0.z = m.c2.x; matrix.c0.w = 0.0f;
-            matrix.c1.x = m.c0.y; matrix.c1.y = m.c1.y; matrix.c1.z = m.c2.y; matrix.c1.w = 0.0f;
-            matrix.c2.x = m.c0.z; matrix.c2.y = m.c1.z; matrix.c2.z = m.c2.z; matrix.c2.w = 0.0f;
-            matrix.c3.x = -(m.c3.x * matrix.c0.x + m.c3.y * matrix.c1.x + m.c3.z * matrix.c2.x);
-            matrix.c3.y = -(m.c3.x * matrix.c0.y + m.c3.y * matrix.c1.y + m.c3.z * matrix.c2.y);
-            matrix.c3.z = -(m.c3.x * matrix.c0.z + m.c3.y * matrix.c1.z + m.c3.z * matrix.c2.z);
-            matrix.c3.w = 1.0f;
-            return matrix;
+            return m.inverse;
         }
 
-        public static  float3 Vector_Normalize(float3 v)
+        public static  vec3 Vector_Normalize(vec3 v)
         {
-            float l = length(v);
-            return float3(v.x / l, v.y / l, v.z / l);
+            float l = Vector_Length(v);
+            return new vec3(v.x / l, v.y / l, v.z / l);
+        }
+        public static float Vector_DotProduct(vec3 v1, vec3 v2)
+        {
+            return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
         }
 
-        public static  float3 Vector_CrossProduct(float3 v1, float3 v2)
+        public static  vec3 Vector_CrossProduct(vec3 v1, vec3 v2)
         {
-            float3 v;
+            vec3 v = vec3.zero;
             v.x = v1.y * v2.z - v1.z * v2.y;
             v.y = v1.z * v2.x - v1.x * v2.z;
             v.z = v1.x * v2.y - v1.y * v2.x;
             return v;
+        }
+        public static float Vector_Length(vec3 v){
+            return Mathf.Sqrt(Vector_DotProduct(v, v));
         }
 
 
@@ -157,7 +183,7 @@ namespace CustomRenderer
     public class Rasterizer
     {
 
-        public static void DrawTriangle(float3 p1, float3 p2, float3 p3, Color c, Texture2D tex)
+        public static void DrawTriangle(vec3 p1, vec3 p2, vec3 p3, Color c, Texture2D tex)
         {
             DrawLine((int)p1.x, (int)p1.y, (int)p2.x, (int)p2.y, c, tex);
             DrawLine((int)p2.x, (int)p2.y, (int)p3.x, (int)p3.y, c, tex);
@@ -220,7 +246,7 @@ namespace CustomRenderer
 
         }
 
-        public static void FillTriangle(float3 p1, float3 p2, float3 p3, Color c, Texture2D tex)
+        public static void FillTriangle(vec3 p1, vec3 p2, vec3 p3, Color c, Texture2D tex)
         {
 
 

@@ -5,15 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Globalization;
 using CustomRenderer;
-using static Unity.Mathematics.math;
-using Unity.Mathematics;
 public class RenderTriangle {
   
-    public float3[] points;
+    public vec3[] points;
     public float lightValue;
     public Color faceColor;
     public RenderTriangle(){
-        points = new float3[3];
+        points = new vec3[3];
         lightValue = 0f;
     }
     public void Log(){
@@ -39,7 +37,7 @@ public class RenderTriangle {
             return (points[0].z + points[1].z + points[2].z) / 3f;
         }
     }
-    public float3 averagePos {
+    public vec3 averagePos {
 
         get{
             return (points[0] + points[1] + points[2])/ 3f;
@@ -48,11 +46,11 @@ public class RenderTriangle {
 }
 public class CustomMesh
 {
-    public List<float3> verts;
+    public List<vec3> verts;
     public List<int> tris;
     public List<Color> triColors;
-    public float3 position, rotation;
-    public CustomMesh(List<float3> verts, List<int> tris)
+    public vec3 position, rotation;
+    public CustomMesh(List<vec3> verts, List<int> tris)
     {
         this.verts = verts;
         this.tris = tris;
@@ -62,7 +60,7 @@ public class CustomMesh
     public bool loadFromObjectFile(string path){
         Color vertexColor = Color.white;
         triColors = new List<Color>();
-        verts = new List<float3>();
+        verts = new List<vec3>();
         tris = new List<int>();
         using(StreamReader stream = File.OpenText(path)){
             while(!stream.EndOfStream){
@@ -75,7 +73,7 @@ public class CustomMesh
                 else if (currentLine.Contains("SKIN")) vertexColor = new Color(1, 0.8f, 0.49f, 1);
                 else if (currentLine.Contains("HAIR")) vertexColor = new Color(0.54f,0,0,1);
                 if(currentLine.Substring(0,1) == "v"){
-                    float3 vertex = float3(0);
+                    vec3 vertex = vec3.zero;
                     double result;
                     currentLine = currentLine.Substring(currentLine.IndexOf(" ") + 1);
                     double.TryParse(currentLine.Substring(0, currentLine.IndexOf(" ")), out result);
@@ -119,9 +117,9 @@ public class Main : MonoBehaviour {
     public Texture2D screentex;
     public int width, height;
     CustomMesh objMesh;
-    float4x4 projMat, matRotX,matRotY, matRotZ,rotMat;
-    float3 vCamera,  vLookDir;
-    Vector3 cameraRotation;
+   public Matrix4x4 projMat,rotMat;
+    public vec3 vCamera = vec3.zero,  vLookDir = vec3.zero;
+   public Vector3 cameraRotation;
     public string objPath;
 	// Use this for initialization
 
@@ -154,8 +152,8 @@ public class Main : MonoBehaviour {
         }else{
             Debug.LogError(".obj mesh failed to import.");
         }
-        objMesh.position = new float3(0, 0, 5);
-        objMesh.rotation = new float3(0, 0, 0);
+        objMesh.position = new vec3(0, 0, 5);
+        objMesh.rotation = new vec3(0, 0, 0);
         float fNear = 0.1f;
         float fFar = 1000.0f;
         float fFov = 60f;
@@ -186,7 +184,7 @@ public class Main : MonoBehaviour {
             vCamera.x += 8.0f * Time.deltaTime;
         }
 
-        float3 vForward = vLookDir * (8.0f * Time.deltaTime);
+        vec3 vForward = vLookDir * (8.0f * Time.deltaTime);
 
         if (Input.GetKey(KeyCode.W))
         {
@@ -208,8 +206,8 @@ public class Main : MonoBehaviour {
 
         ClearScreen();
          vecTrianglesToRaster.Clear();
-        //objMesh.rotation.x += Time.deltaTime * Mathf.Rad2Deg;
-        //objMesh.rotation.z += Time.deltaTime * 0.5f * Mathf.Rad2Deg; // Uncomment to spin me right round baby right round
+        objMesh.rotation.x += Time.deltaTime * Mathf.Rad2Deg;
+        objMesh.rotation.z += Time.deltaTime * 0.5f * Mathf.Rad2Deg; // Uncomment to spin me right round baby right round
         RenderCustomMesh(objMesh);
         RenderVertices();
         if(Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.S)){
@@ -235,22 +233,22 @@ public class Main : MonoBehaviour {
     }
 
     void RenderCustomMesh(CustomMesh renderMesh){
-        float3 rotation = renderMesh.rotation * Mathf.Deg2Rad;
+        vec3 rotation = renderMesh.rotation * Mathf.Deg2Rad;
 
-        rotMat = RenderMath.Matrix_MakeRotation(float3(cameraRotation.x,0,cameraRotation.z));
+        rotMat = RenderMath.Matrix_MakeRotation(new vec3(rotation.x,0,rotation.z));
         RenderTriangle triProjected, triTransformed, triViewed;
         // float outputColor = 0f;
-        float4x4 transMat = RenderMath.Matrix_MakeTranslation(renderMesh.position);
-        float4x4 worldMat = RenderMath.Matrix_MakeIdentity();
+        Matrix4x4 transMat = RenderMath.Matrix_MakeTranslation(renderMesh.position);
+        Matrix4x4 worldMat = RenderMath.Matrix_MakeIdentity();
         worldMat = rotMat;
-        worldMat = RenderMath.Matrix_MultiplyMatrix(worldMat, transMat);
-        float3 vUp = float3(0, 1, 0);
-        float3 vTarget = float3(0,0,1);
-        float4x4 cameraRotMat = RenderMath.Matrix_MakeRotation(float3(0, cameraRotation.y, 0));
+        worldMat = RenderMath.Matrix_MultiplyMatrix(worldMat,transMat);
+        vec3 vUp = new vec3(0, 1, 0);
+        vec3 vTarget = new vec3(0,0,1);
+        Matrix4x4 cameraRotMat = RenderMath.Matrix_MakeRotation(new vec3(0, cameraRotation.y, 0));
         vLookDir = RenderMath.Matrix_MultiplyVector(vTarget,cameraRotMat);
         vTarget = vCamera + vLookDir;
-        float4x4 cameraMat = RenderMath.Matrix_PointAt(vCamera, vTarget, vUp);
-        float4x4 viewMat = RenderMath.Matrix_QuickInverse(cameraMat);
+        Matrix4x4 cameraMat = RenderMath.Matrix_PointAt(vCamera, vTarget, vUp);
+        Matrix4x4 viewMat = RenderMath.Matrix_QuickInverse(cameraMat);
         for (int i = 0; i < renderMesh.tris.Count; i += 3)
         {
             triProjected = new RenderTriangle();
@@ -264,17 +262,17 @@ public class Main : MonoBehaviour {
             // triTransformed.Log();
 
 
-            float3 normal, line1, line2;
+            vec3 normal, line1, line2;
             line1 = triTransformed.points[1] - triTransformed.points[0];
             line2 = triTransformed.points[2] - triTransformed.points[0];
-            normal = cross(line1, line2);
-            normal = normalize(normal);
+            normal = RenderMath.Vector_CrossProduct(line1, line2);
+            normal = RenderMath.Vector_Normalize(normal);
             //Debug.DrawRay(new Vector3(triTransformed.averagePos.x,triTransformed.averagePos.y,triTransformed.averagePos.z), new Vector3(normal.x,normal.y,normal.z)); //show mesh normals in scene view;
-            if (dot(normal, triTransformed.points[0] - vCamera) < 0f)
+            if (RenderMath.Vector_DotProduct(normal, triTransformed.points[0] - vCamera) < 0f)
             {
-                float3 light_direction = float3(0, 1, -1);
+                vec3 light_direction = new vec3(0, 1, -1);
                 light_direction = RenderMath.Vector_Normalize(light_direction);
-                triViewed.lightValue = Mathf.Max(0.1f, dot(light_direction, normal));
+                triViewed.lightValue = Mathf.Max(0.1f, RenderMath.Vector_DotProduct(light_direction, normal));
                 triViewed.faceColor = (renderMesh.triColors.Count * 3 == renderMesh.tris.Count ? renderMesh.triColors[i / 3] : Color.white);
 
 
@@ -287,7 +285,7 @@ public class Main : MonoBehaviour {
                 RenderTriangle[] clipped = new RenderTriangle[2];
                 clipped[0] = new RenderTriangle();
                 clipped[1] = new RenderTriangle();
-                nClippedTriangles = Triangle_ClipAgainstPlane(float3( 0.0f, 0.0f, 0.1f ), float3( 0.0f, 0.0f, 1.0f ), triViewed, ref clipped[0], ref clipped[1]);
+                nClippedTriangles = Triangle_ClipAgainstPlane(new vec3( 0.0f, 0.0f, 0.1f ), new vec3( 0.0f, 0.0f, 1.0f ), triViewed, ref clipped[0], ref clipped[1]);
 
                 for (int n = 0; n < nClippedTriangles; n++)
                 {
@@ -298,9 +296,9 @@ public class Main : MonoBehaviour {
                     triProjected.points[1] = RenderMath.Matrix_MultiplyVector(triViewed.points[1], projMat);
                     triProjected.points[2] = RenderMath.Matrix_MultiplyVector(triViewed.points[2], projMat);
 
-                    triProjected.points[0] = normalize(triProjected.points[0]);
-                    triProjected.points[1] = normalize(triProjected.points[1]);
-                    triProjected.points[2] = normalize(triProjected.points[2]);
+                    triProjected.points[0] = RenderMath.Vector_Normalize(triProjected.points[0]);
+                    triProjected.points[1] = RenderMath.Vector_Normalize(triProjected.points[1]);
+                    triProjected.points[2] = RenderMath.Vector_Normalize(triProjected.points[2]);
                     /*
                     triProjected.points[0].x *= -1.0f;
                     triProjected.points[1].x *= -1.0f;
@@ -309,7 +307,7 @@ public class Main : MonoBehaviour {
                     triProjected.points[1].y *= -1.0f;
                     triProjected.points[2].y *= -1.0f;
 */
-                    float3 vOffsetView = new float3(1, 1, 0);
+                    vec3 vOffsetView = new vec3(1, 1, 0);
 
                     triProjected.points[0] += vOffsetView;
                     triProjected.points[1] += vOffsetView;
@@ -331,35 +329,35 @@ public class Main : MonoBehaviour {
 
     }
 
-    float3 Vector_IntersectPlane(float3 plane_p, float3 plane_n, float3 lineStart, float3 lineEnd)
+    vec3 Vector_IntersectPlane(vec3 plane_p, vec3 plane_n, vec3 lineStart, vec3 lineEnd)
     {
-        plane_n = normalize(plane_n);
-        float plane_d = -dot(plane_n, plane_p);
-        float ad = dot(lineStart, plane_n);
-        float bd = dot(lineEnd, plane_n);
+        plane_n = RenderMath.Vector_Normalize(plane_n);
+        float plane_d = -RenderMath.Vector_DotProduct(plane_n, plane_p);
+        float ad = RenderMath.Vector_DotProduct(lineStart, plane_n);
+        float bd = RenderMath.Vector_DotProduct(lineEnd, plane_n);
         float t = (-plane_d - ad) / (bd - ad);
-        float3 lineStartToEnd = lineEnd - lineStart;
-        float3 lineToIntersect = lineStartToEnd * t;
+        vec3 lineStartToEnd = lineEnd - lineStart;
+        vec3 lineToIntersect = lineStartToEnd * t;
         return lineStart + lineToIntersect;
     }
-    float dist(float3 p,float3 plane_p,float3 plane_n)
+    float dist(vec3 p,vec3 plane_p,vec3 plane_n)
 
         {
-            float3 n = normalize(p);
-            return (plane_n.x* p.x + plane_n.y* p.y + plane_n.z* p.z - dot(plane_n, plane_p));
+            vec3 n = RenderMath.Vector_Normalize(p);
+        return (plane_n.x* p.x + plane_n.y* p.y + plane_n.z* p.z - RenderMath.Vector_DotProduct(plane_n, plane_p));
 }
 
-    int Triangle_ClipAgainstPlane(float3 plane_p, float3 plane_n, RenderTriangle in_tri, ref RenderTriangle out_tri1, ref RenderTriangle out_tri2)
+    int Triangle_ClipAgainstPlane(vec3 plane_p, vec3 plane_n, RenderTriangle in_tri, ref RenderTriangle out_tri1, ref RenderTriangle out_tri2)
     {
         // Make sure plane normal is indeed normal
-        plane_n = normalize(plane_n);
+        plane_n = RenderMath.Vector_Normalize(plane_n);
 
         // Return signed shortest distance from point to plane, plane normal must be normalised
        
         // Create two temporary storage arrays to classify points either side of plane
         // If distance sign is positive, point lies on "inside" of plane
-        float3[] inside_points = new float3[3]; int nInsidePointCount = 0;
-        float3[] outside_points = new float3[3]; int nOutsidePointCount = 0;
+        vec3[] inside_points = new vec3[3]; int nInsidePointCount = 0;
+        vec3[] outside_points = new vec3[3]; int nOutsidePointCount = 0;
 
         // Get signed distance of each point in triangle to plane
         float d0 = dist(in_tri.points[0],plane_p,plane_n);

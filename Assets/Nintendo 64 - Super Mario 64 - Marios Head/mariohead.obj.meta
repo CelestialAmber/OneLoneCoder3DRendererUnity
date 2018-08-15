@@ -1,0 +1,197 @@
+fileFormatVersion: 2
+guid: 9b34bf0cd9305495dbe33269bdb448f3
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: mariohead
+    100002: //RootNode
+    400000: mariohead
+    400002: //RootNode
+    2100000: Material_123_BLACK_png
+    2100002: Material_122_BLACK_png
+    2100004: Material_121_BLACK_png
+    2100006: Material_120_WHITE_png
+    2100008: Material_119_BLACK_png
+    2100010: Material_118_BLUE_png
+    2100012: Material_117_WHITE_png
+    2100014: Material_116_BLACK_png
+    2100016: Material_115_BLUE_png
+    2100018: Material_114_RED_png
+    2100020: Material_113_RED_png
+    2100022: Material_112_HAIR_png
+    2100024: Material_110_WHITE_png
+    2100026: Material_109_HAIR_png
+    2100028: Material_121_SKIN_png
+    2100030: Material_121_WHITE_png
+    2100032: Material_111_WHITE_png
+    2300000: mariohead
+    3300000: mariohead
+    4300000: mariohead
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_109_HAIR_png
+    second: {fileID: 2100000, guid: 2f50f51f70c5e4b5c81cf5033ae9a85f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_110_WHITE_png
+    second: {fileID: 2100000, guid: fbfe9a9bcf8d145738811026ee968df6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_111_WHITE_png
+    second: {fileID: 2100000, guid: 382073123576746d5b8e247afed3c37c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_112_HAIR_png
+    second: {fileID: 2100000, guid: 515e022a03ef54a83b679a55524f72ee, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_113_RED_png
+    second: {fileID: 2100000, guid: c2a54b40ce0504402a955fa2d06b38e4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_114_RED_png
+    second: {fileID: 2100000, guid: c16adf0a639a44c308b20284c56f9be6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_115_BLUE_png
+    second: {fileID: 2100000, guid: d67638b772d55470ca8ab74a18cdb4d2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_116_BLACK_png
+    second: {fileID: 2100000, guid: c9ad840951dc4495ebe8d3e1a667a5af, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_117_WHITE_png
+    second: {fileID: 2100000, guid: 2e9e581662ee44db6a99b549c565f90a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_118_BLUE_png
+    second: {fileID: 2100000, guid: c78a3a88c78e24c1f8ec5c809b3f0c5c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_119_BLACK_png
+    second: {fileID: 2100000, guid: d814ecf415c15497bb705f7cb760d48b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_120_WHITE_png
+    second: {fileID: 2100000, guid: 09601d7972cf24b319c799174468e72f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_121_BLACK_png
+    second: {fileID: 2100000, guid: b48f5071e929944828fce32fc3fe6bc7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_121_SKIN_png
+    second: {fileID: 2100000, guid: be80d894bb5c0490c9dd7b1ac109b6bc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_121_WHITE_png
+    second: {fileID: 2100000, guid: ba96810a526f54741849f46195a10b45, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_122_BLACK_png
+    second: {fileID: 2100000, guid: 71f42a95cb4a54537bf0ae0a6dc1672a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_123_BLACK_png
+    second: {fileID: 2100000, guid: 38beba9478741451491105bc8e93736c, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

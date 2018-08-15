@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
@@ -244,7 +244,7 @@ public class Main : MonoBehaviour {
         worldMat = RenderMath.Matrix_MultiplyMatrix(worldMat,transMat);
         vec3 vUp = new vec3(0, 1, 0);
         vec3 vTarget = new vec3(0,0,1);
-        Matrix4x4 cameraRotMat = RenderMath.Matrix_MakeRotation(new vec3(0, cameraRotation.y, 0));
+        Matrix4x4 cameraRotMat = RenderMath.Matrix_MakeRotationY( cameraRotation.y);
         vLookDir = RenderMath.Matrix_MultiplyVector(vTarget,cameraRotMat);
         vTarget = vCamera + vLookDir;
         Matrix4x4 cameraMat = RenderMath.Matrix_PointAt(vCamera, vTarget, vUp);
